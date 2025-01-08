@@ -112,7 +112,8 @@ class BonecoAuth:
             logger.debug(
                 f'RSSI level: {int.from_bytes(data[0:1], byteorder="little", signed=True)}, state: {data[1]}'
             )
-            if data[1] & 1 == 1:
+            if self._current_state < AuthState.CONFIRMED and data[1] & 1 == 1:
+                logger.info("Pairing confirmed")
                 self._set_state(AuthState.CONFIRMED)
         else:
             logger.warning("not supported")
