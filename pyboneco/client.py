@@ -1,4 +1,5 @@
 import logging
+import traceback
 from bleak import BleakScanner, BleakClient
 from bleak.backends.device import BLEDevice
 from bleak_retry_connector import BLEAK_RETRY_EXCEPTIONS
@@ -101,6 +102,7 @@ class BonecoClient:
                         logger.debug(
                             f"{self._get_internal_name()}: Sending request buffer to device"
                         )
+                        await self._client.stop_notify(CHARACTERISTIC_AUTH_AND_SERVICE)
                         await self._client.write_gatt_char(
                             CHARACTERISTIC_AUTH,
                             self._auth_data.generate_request_buffer(),
@@ -124,9 +126,8 @@ class BonecoClient:
                         )
 
             await self._client.stop_notify(CHARACTERISTIC_AUTH)
-            await self._client.stop_notify(CHARACTERISTIC_AUTH_AND_SERVICE)
         except Exception as e:
-            logger.error(e)
+            logger.error(e, exc_info=True)
 
     @require_auth
     async def get_state(self) -> DeviceState:
