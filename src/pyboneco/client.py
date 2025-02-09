@@ -1,5 +1,4 @@
 import logging
-import traceback
 from bleak import BleakScanner, BleakClient
 from bleak.backends.device import BLEDevice
 from bleak_retry_connector import BLEAK_RETRY_EXCEPTIONS
@@ -23,8 +22,8 @@ class BonecoClient:
     _auth_data: BonecoAuth
     _client: BleakClient
 
-    def __init__(self, client: BleakClient, auth_data: BonecoAuth):
-        self._client = client
+    def __init__(self, auth_data: BonecoAuth):
+        self._client = BleakClient(address_or_ble_device=auth_data.device)
         self._auth_data = auth_data
 
     def require_auth(func):

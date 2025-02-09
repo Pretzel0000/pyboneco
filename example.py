@@ -2,8 +2,6 @@ import asyncio
 import json
 import logging
 
-from bleak import BleakClient
-
 from pyboneco.auth import BonecoAuth
 from pyboneco.client import BonecoClient
 from pyboneco.enums import AuthState
@@ -12,8 +10,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 async def actions(auth: BonecoAuth):
-    bleak_client = BleakClient(address_or_ble_device=auth.device)
-    boneco_client = BonecoClient(bleak_client, auth)
+    boneco_client = BonecoClient(auth)
     try:
         await boneco_client.connect()
         name = await boneco_client.get_device_name()
