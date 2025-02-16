@@ -1,4 +1,11 @@
-from enum import IntEnum
+from enum import IntEnum, StrEnum
+
+
+class BonecoDeviceClass(StrEnum):
+    FAN = "fan"
+    HUMIDIFIER = "humidifier"
+    SIMPLE_CLIMATE = "simple_climate"
+    TOP_CLIMATE = "top_climate"
 
 
 class AuthState(IntEnum):

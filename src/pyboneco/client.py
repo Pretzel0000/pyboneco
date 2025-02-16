@@ -51,6 +51,10 @@ class BonecoClient:
         }
         return {k: v for k, v in manufacturer_data.items() if v.is_boneco_device}
 
+    @property
+    def is_connected(self) -> bool:
+        return self._client.is_connected
+
     async def connect(self) -> bool:
         await self._client.connect()
 
