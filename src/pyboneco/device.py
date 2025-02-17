@@ -1,8 +1,8 @@
 from typing import Optional
 
-from .enums import OperationMode, ModeStatus, BonecoDeviceClass
+from .enums import BonecoOperationMode, BonecoModeStatus, BonecoDeviceClass
 
-OperationModeConfig = Optional[dict[ModeStatus, bool]]
+OperationModeConfig = Optional[dict[BonecoModeStatus, bool]]
 
 
 class BonecoDevice:
@@ -10,7 +10,7 @@ class BonecoDevice:
     device_class: BonecoDeviceClass
     product_id: str
     product_name: str
-    operating_modes: dict[OperationMode, OperationModeConfig]
+    operating_modes: dict[BonecoOperationMode, OperationModeConfig]
     device_timer_support: bool
     history_support: bool
     particle_sensor: bool
@@ -33,7 +33,7 @@ class BonecoDevice:
         device_class: BonecoDeviceClass,
         product_id: str,
         product_name,
-        operating_modes: dict[OperationMode, OperationModeConfig],
+        operating_modes: dict[BonecoOperationMode, OperationModeConfig],
         device_timer_support: bool = False,
         history_support: bool = False,
         particle_sensor: bool = False,
@@ -57,9 +57,9 @@ class BonecoAirFanDevice(BonecoDevice):
             product_name,
             dict(
                 {
-                    OperationMode.HUMIDIFIER: None,
-                    OperationMode.PURIFIER: None,
-                    OperationMode.HYBRID: None,
+                    BonecoOperationMode.HUMIDIFIER: None,
+                    BonecoOperationMode.PURIFIER: None,
+                    BonecoOperationMode.HYBRID: None,
                 }
             ),
         )
@@ -74,14 +74,14 @@ class BonecoHumidifierDevice(BonecoDevice):
             product_name,
             dict(
                 {
-                    OperationMode.HUMIDIFIER: {
-                        ModeStatus.CUSTOM: True,
-                        ModeStatus.AUTO: True,
-                        ModeStatus.BABY: True,
-                        ModeStatus.SLEEP: True,
+                    BonecoOperationMode.HUMIDIFIER: {
+                        BonecoModeStatus.CUSTOM: True,
+                        BonecoModeStatus.AUTO: True,
+                        BonecoModeStatus.BABY: True,
+                        BonecoModeStatus.SLEEP: True,
                     },
-                    OperationMode.PURIFIER: None,
-                    OperationMode.HYBRID: None,
+                    BonecoOperationMode.PURIFIER: None,
+                    BonecoOperationMode.HYBRID: None,
                 }
             ),
         )
@@ -96,23 +96,23 @@ class BonecoSimpleClimateDevice(BonecoDevice):
             product_name,
             dict(
                 {
-                    OperationMode.HUMIDIFIER: {
-                        ModeStatus.CUSTOM: True,
-                        ModeStatus.AUTO: True,
-                        ModeStatus.BABY: True,
-                        ModeStatus.SLEEP: True,
+                    BonecoOperationMode.HUMIDIFIER: {
+                        BonecoModeStatus.CUSTOM: True,
+                        BonecoModeStatus.AUTO: True,
+                        BonecoModeStatus.BABY: True,
+                        BonecoModeStatus.SLEEP: True,
                     },
-                    OperationMode.PURIFIER: {
-                        ModeStatus.CUSTOM: True,
-                        ModeStatus.AUTO: False,
-                        ModeStatus.BABY: False,
-                        ModeStatus.SLEEP: False,
+                    BonecoOperationMode.PURIFIER: {
+                        BonecoModeStatus.CUSTOM: True,
+                        BonecoModeStatus.AUTO: False,
+                        BonecoModeStatus.BABY: False,
+                        BonecoModeStatus.SLEEP: False,
                     },
-                    OperationMode.HYBRID: {
-                        ModeStatus.CUSTOM: True,
-                        ModeStatus.AUTO: True,
-                        ModeStatus.BABY: True,
-                        ModeStatus.SLEEP: True,
+                    BonecoOperationMode.HYBRID: {
+                        BonecoModeStatus.CUSTOM: True,
+                        BonecoModeStatus.AUTO: True,
+                        BonecoModeStatus.BABY: True,
+                        BonecoModeStatus.SLEEP: True,
                     },
                 }
             ),
@@ -128,23 +128,23 @@ class BonecoTopClimateDevice(BonecoDevice):
             product_name,
             dict(
                 {
-                    OperationMode.HUMIDIFIER: {
-                        ModeStatus.CUSTOM: True,
-                        ModeStatus.AUTO: True,
-                        ModeStatus.BABY: True,
-                        ModeStatus.SLEEP: True,
+                    BonecoOperationMode.HUMIDIFIER: {
+                        BonecoModeStatus.CUSTOM: True,
+                        BonecoModeStatus.AUTO: True,
+                        BonecoModeStatus.BABY: True,
+                        BonecoModeStatus.SLEEP: True,
                     },
-                    OperationMode.PURIFIER: {
-                        ModeStatus.CUSTOM: True,
-                        ModeStatus.AUTO: True,
-                        ModeStatus.BABY: True,
-                        ModeStatus.SLEEP: True,
+                    BonecoOperationMode.PURIFIER: {
+                        BonecoModeStatus.CUSTOM: True,
+                        BonecoModeStatus.AUTO: True,
+                        BonecoModeStatus.BABY: True,
+                        BonecoModeStatus.SLEEP: True,
                     },
-                    OperationMode.HYBRID: {
-                        ModeStatus.CUSTOM: True,
-                        ModeStatus.AUTO: True,
-                        ModeStatus.BABY: True,
-                        ModeStatus.SLEEP: True,
+                    BonecoOperationMode.HYBRID: {
+                        BonecoModeStatus.CUSTOM: True,
+                        BonecoModeStatus.AUTO: True,
+                        BonecoModeStatus.BABY: True,
+                        BonecoModeStatus.SLEEP: True,
                     },
                 }
             ),

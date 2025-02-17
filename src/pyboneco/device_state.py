@@ -9,10 +9,10 @@ from .constants import (
     MAX_LED_BRIGHTNESS,
 )
 from .device import BonecoDevice
-from .enums import OperationMode, ModeStatus, TimerStatus
+from .enums import BonecoOperationMode, BonecoModeStatus, BonecoTimerStatus
 
 
-class DeviceState:
+class BonecoDeviceState:
     FAN_MODE_CURRENT_VALUE = 0
     FAN_MODE_TARGET_VALUE = 1
 
@@ -22,8 +22,8 @@ class DeviceState:
 
     _is_air_fan_device: bool
     _has_service_operating_counter: bool
-    _operating_mode: OperationMode
-    _mode_status: ModeStatus
+    _operating_mode: BonecoOperationMode
+    _mode_status: BonecoModeStatus
     _fan: int
     _fan_mode: int
     _timer: int
@@ -44,7 +44,7 @@ class DeviceState:
     _reminder_clean_date: int | None
     _on_off_timer_hours: int
     _clean_mode_support: int
-    _on_off_timer_status: TimerStatus
+    _on_off_timer_status: BonecoTimerStatus
     _on_off_timer_minutes: int
     _min_led_brightness: int
     _max_led_brightness: int
@@ -56,12 +56,12 @@ class DeviceState:
         )
         flag = data[0]
         if self.is_air_fan:
-            self._operating_mode = OperationMode.NONE
-            self._mode_status = ModeStatus.CUSTOM
+            self._operating_mode = BonecoOperationMode.NONE
+            self._mode_status = BonecoModeStatus.CUSTOM
             self._fan = flag & 127
         else:
-            self._operating_mode = OperationMode(flag & 3)
-            self._mode_status = ModeStatus((flag >> 2) & 3)
+            self._operating_mode = BonecoOperationMode(flag & 3)
+            self._mode_status = BonecoModeStatus((flag >> 2) & 3)
             self._fan = (flag >> 4) & 7
             self._fan_mode = (flag >> 7) & 1
         flag = data[1]
@@ -96,7 +96,7 @@ class DeviceState:
         flag = data[16]
         self._on_off_timer_hours = flag & 31
         self._clean_mode_support = (flag >> 5) & 1
-        self._on_off_timer_status = TimerStatus((flag >> 6) & 3)
+        self._on_off_timer_status = BonecoTimerStatus((flag >> 6) & 3)
         self._on_off_timer_minutes = data[17]
         self._min_led_brightness = data[18]
         self._max_led_brightness = data[19]
@@ -119,19 +119,19 @@ class DeviceState:
         return self._has_service_operating_counter
 
     @property
-    def operating_mode(self) -> OperationMode:
+    def operating_mode(self) -> BonecoOperationMode:
         return self._operating_mode
 
     @operating_mode.setter
-    def operating_mode(self, value: OperationMode) -> None:
+    def operating_mode(self, value: BonecoOperationMode) -> None:
         self._operating_mode = value
 
     @property
-    def mode_status(self) -> ModeStatus:
+    def mode_status(self) -> BonecoModeStatus:
         return self._mode_status
 
     @mode_status.setter
-    def mode_status(self, value: ModeStatus) -> None:
+    def mode_status(self, value: BonecoModeStatus) -> None:
         self._mode_status = value
 
     @property
@@ -146,12 +146,12 @@ class DeviceState:
     def fan_level(self, value: int) -> None:
         self._fan = min(
             value,
-            DeviceState.AIR_FAN_DEVICE_FAN_MAX_VALUE
+            BonecoDeviceState.AIR_FAN_DEVICE_FAN_MAX_VALUE
             if self.is_air_fan
-            else DeviceState.OTHER_DEVICE_FAN_MAX_VALUE,
+            else BonecoDeviceState.OTHER_DEVICE_FAN_MAX_VALUE,
         )
-        if self.mode_status != ModeStatus.CUSTOM:
-            self.mode_status = ModeStatus.CUSTOM
+        if self.mode_status != BonecoModeStatus.CUSTOM:
+            self.mode_status = BonecoModeStatus.CUSTOM
 
     @property
     def is_always_history_active(self) -> bool:
@@ -206,7 +206,7 @@ class DeviceState:
             return timestamp and datetime.fromtimestamp(timestamp).astimezone() or None
         if not interval:
             raise ValueError("Interval is required for devices with service counter")
-        return DeviceState.get_date_with_minute_offset(interval, counter)
+        return BonecoDeviceState.get_date_with_minute_offset(interval, counter)
 
     def _set_date_prepare(self, value: datetime | None, name: str) -> int | None:
         if self.has_service_operating_counter and value is not None:
@@ -257,12 +257,12 @@ class DeviceState:
         self._reminder_clean_date = self._set_date_prepare(value, "clean")
 
     @property
-    def on_off_timer_status(self) -> TimerStatus:
+    def on_off_timer_status(self) -> BonecoTimerStatus:
         return self._on_off_timer_status
 
     @on_off_timer_status.setter
-    def on_off_timer_status(self, value: TimerStatus) -> None:
-        if value == TimerStatus.RESERVED:
+    def on_off_timer_status(self, value: BonecoTimerStatus) -> None:
+        if value == BonecoTimerStatus.RESERVED:
             raise ValueError("Not supported value")
         self._on_off_timer_status = value
 
@@ -313,7 +313,7 @@ class DeviceState:
     def _prepare_reminder_date(self, value: int | None) -> bytes:
         if self.has_service_operating_counter:
             if value is None:
-                return DeviceState.RESET_DATE_BYTES
+                return BonecoDeviceState.RESET_DATE_BYTES
         else:
             return value.to_bytes(4, byteorder="little")
 
@@ -338,15 +338,15 @@ class DeviceState:
 
         if (
             filter_data := self._prepare_reminder_date(self._reminder_filter_date)
-        ) == DeviceState.RESET_DATE_BYTES:
+        ) == BonecoDeviceState.RESET_DATE_BYTES:
             self._reminder_filter_date = 0
         if (
             iss_data := self._prepare_reminder_date(self._reminder_iss_date)
-        ) == DeviceState.RESET_DATE_BYTES:
+        ) == BonecoDeviceState.RESET_DATE_BYTES:
             self._reminder_filter_date = 0
         if (
             clean_data := self._prepare_reminder_date(self._reminder_clean_date)
-        ) == DeviceState.RESET_DATE_BYTES:
+        ) == BonecoDeviceState.RESET_DATE_BYTES:
             self._reminder_filter_date = 0
         data = (
             bytes(

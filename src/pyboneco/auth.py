@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher
 from cryptography.hazmat.primitives.ciphers.algorithms import AES
 from cryptography.hazmat.primitives.ciphers.modes import ECB
 
-from .enums import AuthState
+from .enums import BonecoAuthState
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class BonecoAuth:
 
     _state_callback: Callable[["BonecoAuth"], None] | None = None
     _state_changed: Event = Event()
-    _current_state: AuthState = AuthState.AUTH_ERROR
+    _current_state: BonecoAuthState = BonecoAuthState.AUTH_ERROR
     _current_auth_level: int = -1
     service_mode_auth_enabled: bool = False
     _keys = {
@@ -49,7 +49,7 @@ class BonecoAuth:
         return self._state_changed
 
     @property
-    def current_state(self) -> AuthState:
+    def current_state(self) -> BonecoAuthState:
         return self._current_state
 
     @property
@@ -77,9 +77,9 @@ class BonecoAuth:
                 logger.info("Setting nonce")
                 self._nonce = data
                 self._set_state(
-                    AuthState.GOT_DEVICE_KEY
+                    BonecoAuthState.GOT_DEVICE_KEY
                     if self._device_key
-                    else AuthState.GOT_NONCE
+                    else BonecoAuthState.GOT_NONCE
                 )
             elif data[0] == 4:
                 logger.info("Processing auth response")
@@ -87,20 +87,20 @@ class BonecoAuth:
                     self._current_auth_level = data[1]
                     logger.info(f"Changed auth level to {self._current_auth_level}")
                     self._set_state(
-                        AuthState.AUTH_SUCCESS
+                        BonecoAuthState.AUTH_SUCCESS
                         if self._current_auth_level > 0
-                        else AuthState.CONFIRM_WAITING
+                        else BonecoAuthState.CONFIRM_WAITING
                     )
                 else:
                     self._nonce = bytearray()
                     logger.error(
                         f"Auth error, current level remains {self._current_auth_level}"
                     )
-                    self._set_state(AuthState.AUTH_ERROR)
+                    self._set_state(BonecoAuthState.AUTH_ERROR)
             elif data[0:3] == b"\x06\x00\x00":
                 logger.info("Saving device key")
                 self._device_key = data[3:19]
-                self._set_state(AuthState.GOT_DEVICE_KEY)
+                self._set_state(BonecoAuthState.GOT_DEVICE_KEY)
         else:
             logger.warning("not supported")
 
@@ -112,9 +112,9 @@ class BonecoAuth:
             logger.debug(
                 f'RSSI level: {int.from_bytes(data[0:1], byteorder="little", signed=True)}, state: {data[1]}'
             )
-            if self._current_state < AuthState.CONFIRMED and data[1] & 1 == 1:
+            if self._current_state < BonecoAuthState.CONFIRMED and data[1] & 1 == 1:
                 logger.info("Pairing confirmed")
-                self._set_state(AuthState.CONFIRMED)
+                self._set_state(BonecoAuthState.CONFIRMED)
         else:
             logger.warning("not supported")
 
@@ -146,7 +146,7 @@ class BonecoAuth:
         encryptor = cipher.encryptor()
         return encryptor.update(data) + encryptor.finalize()
 
-    def _set_state(self, state: AuthState) -> None:
+    def _set_state(self, state: BonecoAuthState) -> None:
         if self._current_state == state:
             logger.debug(f"Skip re-setting state to {state}")
             return

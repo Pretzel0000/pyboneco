@@ -4,7 +4,7 @@ from bleak.backends.device import BLEDevice
 from bleak_retry_connector import BLEAK_RETRY_EXCEPTIONS
 
 from .advertising_data import BonecoAdvertisingData
-from .auth import AuthState, BonecoAuth
+from .auth import BonecoAuthState, BonecoAuth
 from .constants import (
     CHARACTERISTIC_AUTH,
     CHARACTERISTIC_AUTH_AND_SERVICE,
@@ -13,7 +13,7 @@ from .constants import (
     CHARACTERISTIC_DEVICE_NAME,
 )
 from .device_info import BonecoDeviceInfo
-from .device_state import DeviceState
+from .device_state import BonecoDeviceState
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +29,9 @@ class BonecoClient:
     def require_auth(func):
         async def wrapped(self, *args, **kwargs):
             await self._ensure_connected()
-            if self._auth_data.current_state != AuthState.AUTH_SUCCESS:
+            if self._auth_data.current_state != BonecoAuthState.AUTH_SUCCESS:
                 await self.authorize()
-                if self._auth_data.current_state == AuthState.AUTH_ERROR:
+                if self._auth_data.current_state == BonecoAuthState.AUTH_ERROR:
                     raise ValueError()
             return await func(self, *args, **kwargs)
 
@@ -80,12 +80,12 @@ class BonecoClient:
                 )
                 self._auth_data.state_changed.clear()
                 match self._auth_data.current_state:
-                    case AuthState.AUTH_ERROR:
+                    case BonecoAuthState.AUTH_ERROR:
                         logger.error(
                             f"{self._get_internal_name()}: Can't auth. Exiting"
                         )
                         break
-                    case AuthState.GOT_NONCE:
+                    case BonecoAuthState.GOT_NONCE:
                         await self._client.start_notify(
                             CHARACTERISTIC_AUTH_AND_SERVICE,
                             self._auth_data.characteristics_handler,
@@ -97,11 +97,11 @@ class BonecoClient:
                             CHARACTERISTIC_AUTH,
                             self._auth_data.get_request_for_auth_level(0),
                         )
-                    case AuthState.CONFIRM_WAITING:
+                    case BonecoAuthState.CONFIRM_WAITING:
                         logger.info(
                             f"{self._get_internal_name()}: Press device button to confirm"
                         )
-                    case AuthState.CONFIRMED:
+                    case BonecoAuthState.CONFIRMED:
                         logger.debug(
                             f"{self._get_internal_name()}: Sending request buffer to device"
                         )
@@ -110,7 +110,7 @@ class BonecoClient:
                             CHARACTERISTIC_AUTH,
                             self._auth_data.generate_request_buffer(),
                         )
-                    case AuthState.GOT_DEVICE_KEY:
+                    case BonecoAuthState.GOT_DEVICE_KEY:
                         logger.debug(
                             f"{self._get_internal_name()}: Sending auth request"
                         )
@@ -118,7 +118,7 @@ class BonecoClient:
                             CHARACTERISTIC_AUTH,
                             self._auth_data.get_request_for_auth_level(1),
                         )
-                    case AuthState.AUTH_SUCCESS:
+                    case BonecoAuthState.AUTH_SUCCESS:
                         logger.info(
                             f"{self._get_internal_name()}: Auth finished. Exiting"
                         )
@@ -133,12 +133,12 @@ class BonecoClient:
             logger.error(e, exc_info=True)
 
     @require_auth
-    async def get_state(self) -> DeviceState:
+    async def get_state(self) -> BonecoDeviceState:
         data = await self._client.read_gatt_char(CHARACTERISTIC_DEVICE_STATE)
-        return DeviceState(self._auth_data.name, data)
+        return BonecoDeviceState(self._auth_data.name, data)
 
     @require_auth
-    async def set_state(self, state: DeviceState) -> None:
+    async def set_state(self, state: BonecoDeviceState) -> None:
         await self._client.write_gatt_char(CHARACTERISTIC_DEVICE_STATE, state.hex_value)
 
     @require_auth

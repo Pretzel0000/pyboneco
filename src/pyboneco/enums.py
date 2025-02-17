@@ -8,7 +8,7 @@ class BonecoDeviceClass(StrEnum):
     TOP_CLIMATE = "top_climate"
 
 
-class AuthState(IntEnum):
+class BonecoAuthState(IntEnum):
     AUTH_ERROR = -1
     GOT_NONCE = 0
     CONFIRM_WAITING = 1
@@ -17,21 +17,21 @@ class AuthState(IntEnum):
     AUTH_SUCCESS = 9
 
 
-class OperationMode(IntEnum):
+class BonecoOperationMode(IntEnum):
     NONE = 0
     HUMIDIFIER = 1
     PURIFIER = 2
     HYBRID = 3
 
 
-class ModeStatus(IntEnum):
+class BonecoModeStatus(IntEnum):
     CUSTOM = 0
     AUTO = 1
     BABY = 2
     SLEEP = 3
 
 
-class TimerStatus(IntEnum):
+class BonecoTimerStatus(IntEnum):
     OFF = 0
     ACTIVE_OFF = 1
     ACTIVE_ON = 2
