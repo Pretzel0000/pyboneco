@@ -2,9 +2,7 @@ import asyncio
 import json
 import logging
 
-from pyboneco.auth import BonecoAuth
-from pyboneco.client import BonecoClient
-from pyboneco.enums import AuthState
+from pyboneco import BonecoAuth, BonecoClient, BonecoAuthState
 
 logging.basicConfig(level=logging.INFO)
 
@@ -31,7 +29,7 @@ def auth_state_callback(auth: BonecoAuth) -> None:
     print(
         f"Got new auth state: current={auth.current_state}, level={auth.current_auth_level}"
     )
-    if auth.current_state == AuthState.CONFIRM_WAITING:
+    if auth.current_state == BonecoAuthState.CONFIRM_WAITING:
         print("Press button on device to confirm pairing")
 
 

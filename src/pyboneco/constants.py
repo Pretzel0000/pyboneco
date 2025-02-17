@@ -5,6 +5,7 @@ from .device import (
     BonecoTopClimateDevice,
     BonecoDevice,
 )
+from .enums import BonecoDeviceClass
 
 BONECO_MANUFACTER_ID = 0x0299
 BONECO_DATA_MARKER = 66
@@ -53,4 +54,8 @@ SUPPORTED_DEVICES: list[BonecoDevice] = [
 
 SUPPORTED_DEVICES_BY_TYPE: dict[int, BonecoDevice] = {
     d.device_type: d for d in SUPPORTED_DEVICES
+}
+
+SUUPORTED_DEVICE_CLASSES_BY_MODEL: dict[str, BonecoDeviceClass] = {
+    d.product_name: d.device_class for d in SUPPORTED_DEVICES
 }
