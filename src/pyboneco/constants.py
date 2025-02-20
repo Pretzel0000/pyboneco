@@ -56,6 +56,6 @@ SUPPORTED_DEVICES_BY_TYPE: dict[int, BonecoDevice] = {
     d.device_type: d for d in SUPPORTED_DEVICES
 }
 
-SUUPORTED_DEVICE_CLASSES_BY_MODEL: dict[str, BonecoDeviceClass] = {
+SUPPORTED_DEVICE_CLASSES_BY_MODEL: dict[str, BonecoDeviceClass] = {
     d.product_name: d.device_class for d in SUPPORTED_DEVICES
 }

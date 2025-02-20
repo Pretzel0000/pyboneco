@@ -158,4 +158,4 @@ class BonecoClient:
         if self._client and self._client.is_connected:
             logger.debug(f"{self._get_internal_name()}: Already connected")
             return
-        await self.connect
+        await self.connect()

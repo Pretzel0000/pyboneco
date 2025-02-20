@@ -1,6 +1,6 @@
 [project]
 name = "pyboneco"
-version = "0.3.1"
+version = "0.3.3"
 description = "Basic library for working with Boneco devices"
 readme = "README.md"
 authors = [
