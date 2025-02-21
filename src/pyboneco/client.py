@@ -56,7 +56,8 @@ class BonecoClient:
         return self._client.is_connected
 
     async def connect(self) -> bool:
-        await self._client.connect()
+        if not self.is_connected:
+            await self._client.connect()
 
     async def disconnect(self) -> None:
         try:
@@ -67,6 +68,8 @@ class BonecoClient:
             logger.debug(
                 f"{self._get_internal_name()}: Disconnect completed successfully"
             )
+        finally:
+            self._auth_data.reset_state()
 
     async def authorize(self) -> None:
         try:

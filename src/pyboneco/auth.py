@@ -62,6 +62,9 @@ class BonecoAuth:
 
     def set_auth_state_callback(self, callback: Callable[["BonecoAuth"], None] | None):
         self._state_callback = callback
+    
+    def reset_state(self) -> None:
+        self._set_state(BonecoAuthState.AUTH_ERROR)
 
     def save(self) -> dict[str, str]:
         return {
